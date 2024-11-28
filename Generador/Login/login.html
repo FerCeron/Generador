@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="html5-qrcode.min.js"></script>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-box">
+        <h1>Iniciar Sesión</h1>
+        <form id="loginForm" method="POST">
+            <!-- Campo de Email -->
+            <div class="user-box">
+                <input required name="email" type="email" placeholder=" ">
+                <label>Email</label>
+            </div>
+
+            <!-- Campo de Contraseña -->
+            <div class="user-box">
+                <input required id="contrasenaInput" name="contrasena" type="password" placeholder=" ">
+                <label>Contraseña</label>
+            </div>
+
+            <!-- Botón de Login -->
+            <button type="submit" class="login-btn">Entrar</button>
+        </form>
+
+        <!-- Botón para Escaneo QR -->
+        <button id="scanQRButton" class="scan-btn">Iniciar sesión con QR</button>
+
+        <!-- Lector de Código QR -->
+        <div id="reader"></div>
+    </div>
+</div>
+
+<!-- Modal de Verificación -->
+<div id="verificationModal" class="modal">
+    <div class="modal-content">
+        <h2>Verificación de Correo Electrónico</h2>
+        <p>Se envió un código de verificación a tu correo. Por favor, ingrésalo para continuar.</p>
+        <form id="verificationForm">
+            <input type="text" id="verificationCode" name="verificationCode" required placeholder="Código de verificación">
+            <button type="submit">Verificar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const iniciarEscaneoQR = () => {
+        const qrCodeScanner = new Html5Qrcode("reader");
+
+        document.getElementById("reader").style.display = "block";
+        document.getElementById("scanQRButton").style.display = "none";
+
+        qrCodeScanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                document.getElementById('contrasenaInput').value = decodedText;
+                qrCodeScanner.stop();
+
+                document.getElementById("reader").style.display = "none";
+                document.getElementById("scanQRButton").style.display = "block";
+            },
+            (errorMessage) => {
+                console.warn(`Error al escanear QR: ${errorMessage}`);
+            }
+        ).catch((err) => {
+            console.error("Error al iniciar el escaneo de QR:", err);
+            alert("No se pudo iniciar la cámara. Asegúrate de tener permisos.");
+        });
+    };
+
+    document.getElementById('scanQRButton').addEventListener('click', iniciarEscaneoQR);
+
+    const loginForm = document.querySelector('#loginForm');
+    const verificationModal = document.getElementById('verificationModal');
+    const verificationForm = document.getElementById('verificationForm');
+
+    // Manejo del envío del formulario de inicio de sesión
+    loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(loginForm);
+        const response = await fetch('login_process.php', {
+            method: 'POST',
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'verify_email') {
+            verificationModal.style.display = 'flex';
+        } else if (result.status === 'success') {
+            window.location.href = 'dashboard.php';
+        } else {
+            alert(result.message);
+        }
+    });
+
+    // Manejo del envío del formulario de verificación
+    verificationForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const verificationCode = document.getElementById('verificationCode').value;
+
+        const response = await fetch('verificar_correo.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `codigo=${verificationCode}`,
+        });
+
+        const result = await response.text();
+
+        if (result.includes('Correo verificado exitosamente')) {
+            alert(result);
+            verificationModal.style.display = 'none';
+            window.location.reload();
+        } else {
+            alert(result);
+        }
+    });
+</script>
+</body>
+</html>

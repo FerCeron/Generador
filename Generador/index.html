@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Contraseñas Seguras</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Generador de Contraseñas Seguras</h1>
+
+    <div class="layout">
+        <!-- Sección izquierda: Código QR -->
+        <div class="left-section">
+            <div id="qrCode" class="qr-code"></div>
+            <button id="downloadPdfBtn" class="download-btn" onclick="descargarQRComoPDF()" style="display: none;">Descargar QR en PDF</button>
+        </div>
+
+        <!-- Sección central: Generador -->
+        <div class="main-section">
+            <form id="passwordForm">
+                <!-- Grupo de Entrada: Nombre y Edad -->
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="nombre">Tu Nombre Completo</label>
+                        <input type="text" id="nombre" placeholder="Ingresa tu nombre completo" required>
+                    </div>
+                    <div class="input-box">
+                        <label for="edad">Tu Edad</label>
+                        <input type="number" id="edad" placeholder="Edad automática" readonly>
+                    </div>
+                </div>
+
+                <!-- Grupo de Entrada: Fecha de Nacimiento y Género -->
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacimiento" required>
+                    </div>
+                    <div class="input-box">
+                        <label for="genero">Género</label>
+                        <select id="genero" required>
+                            <option value="">Selecciona tu género</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Campo de Correo Electrónico -->
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="email">Correo Electrónico</label>
+                        <input type="email" id="email" placeholder="Ingresa tu correo electrónico" required>
+                    </div>
+                </div>
+
+                <!-- Entrada de Longitud de Contraseña -->
+                <div class="input-group">
+                    <div class="input-box">
+                        <label for="longitud">Longitud de la contraseña</label>
+                        <input type="number" id="longitud" placeholder="8-20" min="8" max="20" required>
+                    </div>
+                </div>
+
+                <!-- Opciones de Generación de Contraseña -->
+                <div class="pass-settings">
+                    <ul class="options">
+                        <li class="option">
+                            <input type="checkbox" id="uppercase">
+                            <label for="uppercase">Incluir mayúsculas</label>
+                        </li>
+                        <li class="option">
+                            <input type="checkbox" id="lowercase">
+                            <label for="lowercase">Incluir minúsculas</label>
+                        </li>
+                        <li class="option">
+                            <input type="checkbox" id="numbers">
+                            <label for="numbers">Incluir números</label>
+                        </li>
+                        <li class="option">
+                            <input type="checkbox" id="special">
+                            <label for="special">Incluir caracteres especiales</label>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="button-section">
+                    <button type="button" class="generate-btn" onclick="generarPassword()">Generar Contraseña</button>
+                    <button type="button" class="create-account-btn" onclick="generarPasswordYGuardar()">Crear Cuenta</button>
+                </div>
+            </form>
+            <div class="password-result" id="passwordResult"></div>
+            <button id="copyBtn" class="copy-btn" onclick="copiarPassword()">Copiar Contraseña</button>
+        </div>
+
+        <!-- Sección derecha: Evaluador -->
+        <div class="right-section">
+            <div class="input-group">
+                <div class="input-box">
+                    <label for="passwordToEvaluate">Contraseña a Evaluar</label>
+                    <input type="text" id="passwordToEvaluate" placeholder="Ingresa una contraseña para evaluar">
+                    <button type="button" class="evaluate-btn" onclick="evaluarPassword()">Evaluar Contraseña</button>
+                </div>
+            </div>
+            <div id="evaluationResult">
+                <p><strong>Nivel de seguridad:</strong> <span id="securityLevel"></span></p>
+                <p><strong>Puntuación:</strong> <span id="passwordScore"></span>/100</p>
+                <ul id="passwordRecommendations"></ul> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
